@@ -19,6 +19,30 @@ header {
   margin-bottom: 12px;
 }
 
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.logo {
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+}
+
+.brand-text h1 {
+  font-size: 15px;
+  line-height: 1.1;
+  color: #6b4423;
+}
+
+.tagline {
+  font-size: 10px;
+  color: #a1774a;
+  margin-top: 1px;
+}
+
 h1 {
   font-size: 16px;
 }
@@ -44,18 +68,18 @@ select {
   font-size: 14px;
   font-weight: 600;
   color: #fff;
-  background: #1f883d;
+  background: #8A5A2B;
   border: none;
   border-radius: 8px;
   cursor: pointer;
 }
 
 #summarize:hover {
-  background: #1a7f37;
+  background: #6b4423;
 }
 
 #summarize:disabled {
-  background: #94d3a2;
+  background: #c9a986;
   cursor: default;
 }
 
@@ -85,7 +109,7 @@ select {
   line-height: 1.45;
   padding: 8px 10px;
   background: #f6f8fa;
-  border-left: 3px solid #1f883d;
+  border-left: 3px solid #C68A4E;
   border-radius: 4px;
 }
 

@@ -4,11 +4,17 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="popup.css" />
-    <title>Summarize This Page</title>
+    <title>Nutshell</title>
   </head>
   <body>
     <header>
-      <h1>📝 Summarize</h1>
+      <div class="brand">
+        <img src="../icons/logo.svg" alt="Nutshell" class="logo" />
+        <div class="brand-text">
+          <h1>Nutshell</h1>
+          <p class="tagline">The entire web, in a nutshell.</p>
+        </div>
+      </div>
       <div class="controls">
         <label for="points">Points</label>
         <select id="points">
@@ -19,7 +25,7 @@
       </div>
     </header>
 
-    <button id="summarize">Summarize this page</button>
+    <button id="summarize">Summarize</button>
 
     <div id="status" class="status hidden"></div>
 

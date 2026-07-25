@@ -1,11 +1,11 @@
 {
   "manifest_version": 3,
-  "name": "Summarize This Page",
+  "name": "Nutshell",
   "version": "1.0.0",
-  "description": "Summarizes the current web page into a few key sentences. Learning project (local, no API).",
+  "description": "The entire web, in a nutshell. Summarizes any page into key points using on-device AI (no API key).",
   "permissions": ["activeTab", "scripting", "storage"],
   "action": {
-    "default_title": "Summarize This Page",
+    "default_title": "Nutshell — the entire web, in a nutshell",
     "default_popup": "popup/popup.html",
     "default_icon": {
       "16": "icons/icon16.png",

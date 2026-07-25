@@ -66,9 +66,11 @@ async function summarizePage(text, count) {
   try {
     if (window.PageAI && window.PageAI.isPromptApiSupported()) {
       console.log("[Summarize][popup] Step 5a: trying on-device AI");
-      setStatus("Summarizing with on-device AI…");
+      setStatus("Summarizing…");
       const points = await window.PageAI.summarizeWithAI(text, count, (pct) => {
-        setStatus(`Downloading AI model… ${pct}%`);
+        // Model may download on first run; keep the user-facing message simple.
+        console.log("[Summarize][popup] model download:", pct + "%");
+        setStatus("Summarizing…");
       });
       return { points, engine: "ai" };
     }
@@ -78,7 +80,7 @@ async function summarizePage(text, count) {
   }
 
   console.log("[Summarize][popup] Step 5b: using local summarizer");
-  setStatus("Summarizing locally…");
+  setStatus("Summarizing…");
   const points = window.PageSummarizer.summarize(text, count);
   return { points, engine: "local" };
 }
@@ -86,7 +88,7 @@ async function summarizePage(text, count) {
 async function handleSummarize() {
   els.button.disabled = true;
   els.result.classList.add("hidden");
-  setStatus("Reading the page…");
+  setStatus("Summarizing…");
   console.log("[Summarize][popup] Step 1: button clicked, finding active tab");
 
   try {

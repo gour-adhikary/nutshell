@@ -1,6 +1,6 @@
-# 📝 Summarize This Page — a browser extension learning project
+# 🌰 Nutshell — the entire web, in a nutshell
 
-A Manifest V3 Chrome/Edge extension that summarizes the current web page into
+A Manifest V3 Chrome/Edge extension that cracks any web page open into
 **3, 5 or 10 key points**. It uses Chrome's built-in **on-device AI** (the
 Prompt API / Gemini Nano — no API key, runs locally), and automatically falls
 back to a **local extractive summarizer** when on-device AI isn't available.
