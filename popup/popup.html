@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="popup.css" />
+    <title>Summarize This Page</title>
+  </head>
+  <body>
+    <header>
+      <h1>📝 Summarize</h1>
+      <div class="controls">
+        <label for="points">Points</label>
+        <select id="points">
+          <option value="3" selected>3</option>
+          <option value="5">5</option>
+          <option value="10">10</option>
+        </select>
+      </div>
+    </header>
+
+    <button id="summarize">Summarize this page</button>
+
+    <div id="status" class="status hidden"></div>
+
+    <section id="result" class="result hidden">
+      <ul id="summary"></ul>
+      <div class="meta">
+        <span id="meta-text"></span>
+        <button id="copy" class="link-btn">Copy</button>
+      </div>
+    </section>
+
+    <script src="summarizer.js"></script>
+    <script src="ai.js"></script>
+    <script src="popup.js"></script>
+  </body>
+</html>
