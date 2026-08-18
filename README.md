@@ -5,12 +5,17 @@ A Manifest V3 Chrome/Edge extension that cracks any web page open into
 Prompt API / Gemini Nano — no API key, runs locally), and automatically falls
 back to a **local extractive summarizer** when on-device AI isn't available.
 
+After a summary, you can **ask follow-up questions about the page**. The page
+stays in context, so you can just ask *"who wrote this?"* or *"what's the main
+takeaway?"* without re-pasting anything — the AI answers straight from the page.
+
 ## Load it in your browser (Chrome or Edge)
 
 1. Go to `chrome://extensions` (or `edge://extensions`).
 2. Turn on **Developer mode** (top-right toggle).
 3. Click **Load unpacked** and select this folder (`xtnsions`).
-4. Pin the extension, open any article, click the icon → **Summarize this page**.
+4. Pin the extension, open any article, click the icon → **Summarize**, then
+   use the **Ask about this page** box to ask follow-up questions.
 
 After editing code, click the **reload** ↻ icon on the extension card.
 
