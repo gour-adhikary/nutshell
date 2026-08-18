@@ -14,6 +14,10 @@
 
 const MAX_INPUT_CHARS = 6000; // keep within the small on-device context window
 
+// The live session for the current page. Seeded with the page text on
+// summarize, then reused for follow-up questions so context persists.
+let activeSession = null;
+
 // Is the Prompt API even present in this browser?
 function isPromptApiSupported() {
   return typeof LanguageModel !== "undefined";
@@ -40,6 +44,8 @@ function parsePoints(text, max) {
 
 /**
  * Summarize text into exactly `points` bullet points using on-device AI.
+ * Keeps the session alive (seeded with the page) so the user can ask
+ * follow-up questions afterwards via ask().
  * @param {string} text
  * @param {number} points        3, 5 or 10
  * @param {(pct:number)=>void} onProgress  called with download % on first run
@@ -56,8 +62,27 @@ async function summarizeWithAI(text, points, onProgress) {
     throw new Error("On-device AI is unavailable on this device.");
   }
 
+  // Close any previous page's session before starting a new one.
+  endSession();
+
+  const clippedContext =
+    text.length > MAX_INPUT_CHARS ? text.slice(0, MAX_INPUT_CHARS) : text;
+
   // create() will download the model on first use (needs the user click we already have).
+  // The page text is baked in as a system prompt so it stays as context for
+  // both the summary AND every follow-up question on this session.
   const session = await LanguageModel.create({
+    initialPrompts: [
+      {
+        role: "system",
+        content:
+          "You are Nutshell, a helpful assistant. Answer using ONLY the web " +
+          "page content provided below. If the answer is not in the page, say " +
+          "you couldn't find it on this page. Be concise.\n\n" +
+          "WEB PAGE CONTENT:\n" +
+          clippedContext,
+      },
+    ],
     monitor(m) {
       m.addEventListener("downloadprogress", (e) => {
         const pct = Math.round(e.loaded * 100);
@@ -67,24 +92,24 @@ async function summarizeWithAI(text, points, onProgress) {
     },
   });
 
-  const clipped =
-    text.length > MAX_INPUT_CHARS ? text.slice(0, MAX_INPUT_CHARS) : text;
-
   const prompt =
-    `Summarize the following web page content into exactly ${points} key points.\n` +
+    `Summarize the web page into exactly ${points} key points.\n` +
     `Rules:\n` +
     `- Output ONLY the ${points} points, nothing else.\n` +
     `- One point per line, each starting with "- ".\n` +
-    `- Keep each point to a single concise sentence.\n\n` +
-    `CONTENT:\n${clipped}`;
+    `- Keep each point to a single concise sentence.`;
 
   let output;
   try {
     console.log("[Summarize][ai] prompting on-device model…");
     output = await session.prompt(prompt);
-  } finally {
-    session.destroy(); // always free the model resources
+  } catch (err) {
+    session.destroy();
+    throw err;
   }
+
+  // Keep the session alive for follow-up questions (do NOT destroy here).
+  activeSession = session;
 
   const parsed = parsePoints(output, points);
   if (parsed.length === 0) {
@@ -93,5 +118,41 @@ async function summarizeWithAI(text, points, onProgress) {
   return parsed;
 }
 
+/**
+ * Ask a follow-up question. Reuses the session from the last summary, so the
+ * page is already in context — the user doesn't need to repeat anything.
+ * @param {string} question
+ * @returns {Promise<string>}
+ */
+async function ask(question) {
+  if (!activeSession) {
+    throw new Error("Ask isn't available — summarize a page with AI first.");
+  }
+  console.log("[Nutshell][ai] follow-up question:", question);
+  return activeSession.prompt(question);
+}
+
+// True when a page-context session exists (i.e. follow-ups are possible).
+function canAsk() {
+  return !!activeSession;
+}
+
+// Free the on-device model session.
+function endSession() {
+  if (activeSession) {
+    try {
+      activeSession.destroy();
+    } catch {}
+    activeSession = null;
+  }
+}
+
 // Expose to popup.js
-window.PageAI = { isPromptApiSupported, getAvailability, summarizeWithAI };
+window.PageAI = {
+  isPromptApiSupported,
+  getAvailability,
+  summarizeWithAI,
+  ask,
+  canAsk,
+  endSession,
+};

@@ -15,6 +15,11 @@ const els = {
   metaText: document.getElementById("meta-text"),
   copy: document.getElementById("copy"),
   points: document.getElementById("points"),
+  chat: document.getElementById("chat"),
+  chatLog: document.getElementById("chat-log"),
+  chatForm: document.getElementById("chat-form"),
+  chatInput: document.getElementById("chat-input"),
+  chatSend: document.getElementById("chat-send"),
 };
 
 // This function is serialized and injected INTO the web page by
@@ -88,6 +93,7 @@ async function summarizePage(text, count) {
 async function handleSummarize() {
   els.button.disabled = true;
   els.result.classList.add("hidden");
+  els.chat.classList.add("hidden");
   setStatus("Summarizing…");
   console.log("[Summarize][popup] Step 1: button clicked, finding active tab");
 
@@ -125,6 +131,16 @@ async function handleSummarize() {
     renderSummary(points, wordCount, engine);
     console.log("[Summarize][popup] Step 6: rendered", points.length, "points via", engine);
 
+    // Show the follow-up chat only when the AI session is available
+    // (the on-device model holds the page as context). The local fallback
+    // has no chat session, so we hide it in that case.
+    if (engine === "ai" && window.PageAI && window.PageAI.canAsk()) {
+      els.chatLog.innerHTML = "";
+      els.chat.classList.remove("hidden");
+    } else {
+      els.chat.classList.add("hidden");
+    }
+
     // Remember the last summary so the copy button works.
     els._lastSummary = `${title}\n\n- ${points.join("\n- ")}`;
   } catch (err) {
@@ -142,5 +158,47 @@ async function handleCopy() {
   setTimeout(() => (els.copy.textContent = "Copy"), 1200);
 }
 
+// Add a message bubble to the chat log and return the element (so we can
+// update the AI one in place once its answer arrives).
+function addMessage(role, text) {
+  const div = document.createElement("div");
+  div.className = `msg ${role}`;
+  div.textContent = text;
+  els.chatLog.appendChild(div);
+  els.chatLog.scrollTop = els.chatLog.scrollHeight;
+  return div;
+}
+
+async function handleAsk(event) {
+  event.preventDefault();
+  const question = els.chatInput.value.trim();
+  if (!question) return;
+
+  els.chatInput.value = "";
+  els.chatInput.disabled = true;
+  els.chatSend.disabled = true;
+
+  addMessage("user", question);
+  const aiBubble = addMessage("ai", "Thinking…");
+  aiBubble.classList.add("thinking");
+
+  try {
+    const answer = await window.PageAI.ask(question);
+    aiBubble.classList.remove("thinking");
+    aiBubble.textContent = answer.trim();
+  } catch (err) {
+    console.warn("[Nutshell][popup] ask failed:", err.message);
+    aiBubble.classList.remove("thinking");
+    aiBubble.classList.add("thinking");
+    aiBubble.textContent = err.message || "Sorry, I couldn't answer that.";
+  } finally {
+    els.chatInput.disabled = false;
+    els.chatSend.disabled = false;
+    els.chatInput.focus();
+    els.chatLog.scrollTop = els.chatLog.scrollHeight;
+  }
+}
+
 els.button.addEventListener("click", handleSummarize);
 els.copy.addEventListener("click", handleCopy);
+els.chatForm.addEventListener("submit", handleAsk);

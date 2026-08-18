@@ -40,6 +40,16 @@ icons/                → toolbar icons
    local *extractive* algorithm that scores sentences and picks the top N.
    Either way you get N points; the popup shows which engine was used.
 5. **popup.js** renders the points and wires up the Copy button.
+6. **Follow-up chat** (`ai.js` + `popup.js`): the on-device AI session is kept
+   alive with the page text baked in as its system context. After the summary,
+   an "Ask about this page" box appears — every question you type reuses that
+   same session, so the model already knows the page. You just ask
+   *"who wrote this?"* and it answers from the page. No re-pasting, no long
+   prompts. (This chat only appears when the on-device AI ran, not the local
+   fallback, since the fallback has no conversational model.)
+
+   > Note: the on-device model answers **only from the page + its training** —
+   > it does **not** search the web.
 
 ### Key concepts this project demonstrates
 - `manifest.json` structure (Manifest V3)
