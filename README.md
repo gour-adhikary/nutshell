@@ -9,15 +9,58 @@ After a summary, you can **ask follow-up questions about the page**. The page
 stays in context, so you can just ask *"who wrote this?"* or *"what's the main
 takeaway?"* without re-pasting anything — the AI answers straight from the page.
 
-## Load it in your browser (Chrome or Edge)
+## Install & use it (no Chrome Web Store needed)
 
-1. Go to `chrome://extensions` (or `edge://extensions`).
-2. Turn on **Developer mode** (top-right toggle).
-3. Click **Load unpacked** and select this folder (`xtnsions`).
-4. Pin the extension, open any article, click the icon → **Summarize**, then
-   use the **Ask about this page** box to ask follow-up questions.
+Nutshell isn't published on the Chrome Web Store, so you load it manually in
+**Developer mode** — this is completely normal for personal/open-source
+extensions and only takes a minute.
 
-After editing code, click the **reload** ↻ icon on the extension card.
+### 1. Get the code onto your computer
+
+**Option A — with git:**
+```
+git clone https://github.com/gour-adhikary/nutshell.git
+```
+
+**Option B — without git:**
+On the [repo page](https://github.com/gour-adhikary/nutshell), click the green
+**Code** button → **Download ZIP**, then unzip it anywhere on your computer.
+
+### 2. Load it into Chrome (or Edge)
+
+1. Go to `chrome://extensions` (Edge: `edge://extensions`).
+2. Turn on **Developer mode** (top-right toggle). This just tells Chrome
+   you're loading an extension yourself instead of from the Web Store — safe
+   as long as you trust the code you're loading.
+3. Click **Load unpacked**.
+4. Select the `nutshell` folder you cloned/unzipped (the one that contains
+   `manifest.json`).
+5. Nutshell appears in your extensions list with its walnut icon.
+
+### 3. Pin it to the toolbar
+
+Click the puzzle-piece icon 🧩 in Chrome's toolbar, then click the pin 📌 next
+to Nutshell so it's always one click away.
+
+### 4. Use it
+
+1. Open any article or web page.
+2. Click the Nutshell icon in the toolbar.
+3. Pick **3, 5, or 10** points from the dropdown.
+4. Click **Summarize**.
+5. Read your key points.
+6. Type a follow-up in the **"Ask about this page"** box — no need to repeat
+   any context, e.g. *"who is this written by?"* or *"what's the conclusion?"*
+
+### 5. Getting future updates
+
+Since it isn't on the Web Store, new versions don't auto-install. When the
+code changes:
+
+- **With git:** `cd nutshell && git pull`
+- **Without git:** re-download the ZIP and unzip it over the old folder.
+- Then go to `chrome://extensions` and click the **reload ↻** icon on the
+  Nutshell card to pick up the changes.
 
 ## How it works (the parts you're learning)
 
@@ -75,9 +118,10 @@ The AI runs locally via Chrome's Prompt API. To use it you need:
   - `chrome://flags/#prompt-api-for-gemini-nano` → **Enabled**
   - `chrome://flags/#optimization-guide-on-device-model` → **Enabled BypassPerfRequirement**
 
-The **first** summarize click may download the model (you'll see a
-"Downloading AI model… %" status). If any requirement is missing, the extension
-automatically falls back to the local summarizer — it always works.
+The **first** summarize click may download the model in the background (this
+can take a bit longer than usual, but the popup just shows "Summarizing…").
+If any requirement is missing, the extension automatically falls back to the
+local summarizer — it always works.
 
 > Watch the on-device AI logs (`[Summarize][ai] …`) in the **popup's** Inspect
 > console. In production you'd also register an [origin trial token] and add it
